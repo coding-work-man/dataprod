@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Prediction Miles Per Gallon For Your Automobile</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Prediction Miles Per Gallon For Your Automobile">
+  <meta name="author" content="John Jiang">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="./assets/css/ribbons.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <hgroup class="auto-fadein">
+    <h1>Prediction Miles Per Gallon For Your Automobile</h1>
+    <h2>Project Work For Data Product Course</h2>
+    <p>John Jiang<br/></p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>The Idea</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>We have built a model in regression class to predict the MPG(miles per gallon) for automobiles based on the dataset we get from <code>mtcars</code>. We can put it as a web application ,users can input their automobile&#39;s transimission type, weight and 1/4 mile time then they can get an estimation of the MPG for their car.</p>
+
+<p>The model used was:</p>
+
+<p>\[ mpg=9.6178+2.9358(am=manual)-3.9165wt+1.2259qsec \]</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-2" style="background:;">
+  <hgroup>
+    <h2>UI Code</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>First we need to take input from users:</p>
+
+<pre><code class="r">shinyUI(pageWithSidebar(
+  headerPanel(&quot;Miles Per Gallon Estimation&quot;),
+    sidebarPanel(  
+    selectInput(&#39;am&#39;,&#39;Transimisson Type&#39;,c(&#39;Auto&#39;,&#39;Manual&#39;)),
+    numericInput(&quot;wt&quot;, &quot;Weight of your car(ton)&quot;, 2),
+    numericInput(&quot;qsec&quot;, &quot;1/4 miles time&quot;, 16)
+
+  )  
+))
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>Server Code</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Next step we need to get the data from user input and do the prediction with a linear model.</p>
+
+<pre><code class="r">shinyServer(function(input, output) {
+  output$plot &lt;- renderPlot(function() {  
+    am=input$am
+    if(am==&#39;Auto&#39;)
+      am=0
+    else
+      am=1
+    qsec=input$qsec
+    wt=input$wt
+    data(mtcars)
+    fit=lm(mpg~am+wt+qsec,data=mtcars)
+    newdata=data.frame(am=am,wt=wt,qsec=qsec)
+    miles=predict(fit,newdata=newdata)
+    hist(mtcars$mpg,breaks=10,xlab=&quot;Miles Per Gallon&quot;,ylab=&quot;Frequency&quot;,
+         main=&quot;Prediction For MPG&quot;)
+    abline(v=miles,col=&quot;red&quot;,lwd=2)
+    miles.txt=as.character(miles)
+    miles.txt=paste(&quot;Your MPG:&quot;,substr(miles.txt,1,5))
+    text(miles,7,miles.txt)
+  }, height=500)  
+})
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>The Result</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Let&#39;s say, if we get a input for auto transimission, weight as 2.6,qsec as 16, the results from our application would be like:</p>
+
+<p><img src="assets/fig/unnamed-chunk-4.png" alt="plot of chunk unnamed-chunk-4"> </p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='The Idea'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='UI Code'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='Server Code'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='The Result'>
+         4
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  
+  <!-- MathJax: Fall back to local if CDN offline but local image fonts are not supported (saves >100MB) -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        processEscapes: true
+      }
+    });
+  </script>
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <!-- <script src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script> -->
+  <script>window.MathJax || document.write('<script type="text/x-mathjax-config">MathJax.Hub.Config({"HTML-CSS":{imageFont:null}});<\/script><script src="libraries/widgets/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"><\/script>')
+</script>
+<!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>
